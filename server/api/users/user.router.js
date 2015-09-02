@@ -1,4 +1,4 @@
-'use strict';
+// 'use strict';
 
 var router = require('express').Router(),
 	_ = require('lodash');
@@ -7,75 +7,86 @@ var HttpError = require('../../utils/HttpError');
 var User = require('./user.model');
 //var session = require('express-session');
 
-router.param('id', function (req, res, next, id) {
+router.param('id', function(req, res, next, id) {
 	User.findById(id).exec()
-	.then(function (user) {
-		if (!user) throw HttpError(404);
-		req.requestedUser = user;
-		next();
-	})
-	.then(null, next);
+		.then(function(user) {
+			if (!user) throw HttpError(404);
+			req.requestedUser = user;
+			next();
+		})
+		.then(null, next);
 });
 
 // router.use(session({
 //     secret: 'tongiscool'
 // }));
 
-router.get('/', function (req, res, next) {
+router.get('/', function(req, res, next) {
 	User.find({}).exec()
-	.then(function (users) {
-		res.json(users);
-	})
-	.then(null, next);
+		.then(function(users) {
+			res.json(users);
+		})
+		.then(null, next);
 });
 
-router.post('/login',function(req,res,next){
-	User.find({email: req.body.email, password: req.body.password})
-		.then(function(user){
+router.post('/login', function(req, res, next) {
+	User.find({
+			email: req.body.email,
+			password: req.body.password
+		})
+		.then(function(user) {
 			if (user.length) {
 				req.session.userId = user[0]._id;
 				console.log(req.session);
-				res.status(200).json(user);				
-			}
-			else {
+				res.status(200).json(user);
+			} else {
 				res.status(401).send();
 			}
 		});
-	});
+});
 
-router.post('/', function (req, res, next) {
+router.post('/', function(req, res, next) {
 	User.create(req.body)
-	.then(function (user) {
-		res.status(201).json(user);
-	})
-	.then(null, next);
+		.then(function(user) {
+			res.status(201).json(user);
+		})
+		.then(null, next);
 });
 
-router.get('/:id', function (req, res, next) {
+router.get('/:id', function(req, res, next) {
 	req.requestedUser.getStories()
-	.then(function (stories) {
-		var obj = req.requestedUser.toObject();
-		obj.stories = stories;
-		res.json(obj);
-	})
-	.then(null, next);
+		.then(function(stories) {
+			var obj = req.requestedUser.toObject();
+			obj.stories = stories;
+			res.json(obj);
+		})
+		.then(null, next);
 });
 
-router.put('/:id', function (req, res, next) {
+router.put('/:id', function(req, res, next) {
 	_.extend(req.requestedUser, req.body);
 	req.requestedUser.save()
-	.then(function (user) {
-		res.json(user);
-	})
-	.then(null, next);
+		.then(function(user) {
+			res.json(user);
+		})
+		.then(null, next);
+});
+router.delete('/logout', function(req, res, next) {
+	console.log('delete');
+	req.session.destroy(function(err) {
+		console.log('in delete');
+		res.status(202).end();
+	});
 });
 
-router.delete('/:id', function (req, res, next) {
+router.delete('/:id', function(req, res, next) {
 	req.requestedUser.remove()
-	.then(function () {
-		res.status(204).end();
-	})
-	.then(null, next);
+		.then(function() {
+			res.status(204).end();
+		})
+		.then(null, next);
 });
+
+
 
 module.exports = router;
