@@ -1,6 +1,7 @@
 app.factory('Auth', function($http) {
   return {
     login: function(user) {
+      console.log(user);
       $http.post('/api/users/login', user).then(function(response) {
         return response.data;
       }).then(null, console.error);

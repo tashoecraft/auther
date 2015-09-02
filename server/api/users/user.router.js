@@ -28,10 +28,10 @@ router.post('/login',function(req,res,next){
 	User.find({email: req.body.email, password: req.body.password})
 		.then(function(user){
 			if (user.length) {
-				res.statusCode(200).json(user);				
+				res.status(200).json(user);				
 			}
 			else {
-				res.statusCode(401).send();
+				res.status(401).send();
 			}
 		});
 	});
