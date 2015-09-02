@@ -5,6 +5,7 @@ var router = require('express').Router(),
 
 var HttpError = require('../../utils/HttpError');
 var User = require('./user.model');
+//var session = require('express-session');
 
 router.param('id', function (req, res, next, id) {
 	User.findById(id).exec()
@@ -15,6 +16,10 @@ router.param('id', function (req, res, next, id) {
 	})
 	.then(null, next);
 });
+
+// router.use(session({
+//     secret: 'tongiscool'
+// }));
 
 router.get('/', function (req, res, next) {
 	User.find({}).exec()
@@ -28,6 +33,8 @@ router.post('/login',function(req,res,next){
 	User.find({email: req.body.email, password: req.body.password})
 		.then(function(user){
 			if (user.length) {
+				req.session.userId = user[0]._id;
+				console.log(req.session);
 				res.status(200).json(user);				
 			}
 			else {
