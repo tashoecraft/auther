@@ -25,6 +25,7 @@ app.use(function(req, res, next) {
 
 
 app.use('/api', require('../api/api.router'));
+app.use('/auth', require('../auth/auth.router'));
 
 var validFrontendRoutes = ['/', '/stories', '/users', '/stories/:id',
   '/users/:id', '/signup', '/login'
@@ -37,5 +38,7 @@ validFrontendRoutes.forEach(function(stateRoute) {
 });
 
 app.use(require('./error.middleware'));
+
+
 
 module.exports = app;
