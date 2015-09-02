@@ -12,7 +12,7 @@ app.directive('navbar', function($state, $location, $http, Auth, $rootScope) {
 			};
 			scope.logout = function() {
 				$http.delete('/api/users/logout').then(function() {
-					$rootScope.userStatus = false;
+					$rootScope.user = false;
 					$state.go('login');
 				}).then(null, console.error);
 			};

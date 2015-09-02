@@ -17,10 +17,6 @@ router.param('id', function(req, res, next, id) {
 		.then(null, next);
 });
 
-// router.use(session({
-//     secret: 'tongiscool'
-// }));
-
 router.get('/', function(req, res, next) {
 	User.find({}).exec()
 		.then(function(users) {
@@ -51,6 +47,13 @@ router.post('/', function(req, res, next) {
 			res.status(201).json(user);
 		})
 		.then(null, next);
+});
+
+router.get('/auth/me', function(req, res, next) {
+	var id = req.session.userId;
+	User.findById(id).then(function(user) {
+		res.json(user);
+	}).then(null, console.error);
 });
 
 router.get('/:id', function(req, res, next) {
