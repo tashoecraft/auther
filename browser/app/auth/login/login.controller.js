@@ -4,8 +4,6 @@ app.controller('login', function($scope) {
     password: null
   };
 
-  $scope.login = function() {
-    console.log($scope.user);
-  }
+  $scope.loginOrSignUp = Auth.login;
 
 });
