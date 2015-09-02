@@ -27,13 +27,14 @@ router.get('/', function (req, res, next) {
 router.post('/login',function(req,res,next){
 	User.find({email: req.body.email, password: req.body.password})
 		.then(function(user){
-			res.statusCode(200).json(user);
-		})
-		.then(null,function(err){
-			console.error(err);
-			res.statusCode(401).send();
+			if (user.length) {
+				res.statusCode(200).json(user);				
+			}
+			else {
+				res.statusCode(401).send();
+			}
 		});
-});
+	});
 
 router.post('/', function (req, res, next) {
 	User.create(req.body)
