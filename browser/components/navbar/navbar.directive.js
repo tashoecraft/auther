@@ -11,7 +11,7 @@ app.directive('navbar', function($state, $location, $http, Auth, $rootScope) {
 				return path.startsWith(partial);
 			};
 			scope.logout = function() {
-				$http.delete('/api/users/logout').then(function() {
+				$http.get('/api/users/logout').then(function() {
 					$rootScope.user = false;
 					$state.go('login');
 				}).then(null, console.error);

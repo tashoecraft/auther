@@ -20,6 +20,9 @@ app.use(function(req, res, next) {
   if (req.session.userId) {
     console.log(req.session);
   }
+  else {
+  	console.log('User is not logged in.');
+  }
   next();
 });
 

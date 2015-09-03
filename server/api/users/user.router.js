@@ -33,7 +33,6 @@ router.post('/login', function(req, res, next) {
 		.then(function(user) {
 			if (user.length) {
 				req.session.userId = user[0]._id;
-				console.log(req.session);
 				res.status(200).json(user);
 			} else {
 				res.status(401).send();
@@ -50,10 +49,20 @@ router.post('/', function(req, res, next) {
 });
 
 router.get('/auth/me', function(req, res, next) {
-	var id = req.session.userId;
-	User.findById(id).then(function(user) {
-		res.json(user);
-	}).then(null, console.error);
+	if (req.session.userId || req.session.passport) {
+		var id = req.session.userId || req.session.passport.user._id;
+		User.findById(id).then(function(user) {
+			res.json(user);
+		}).then(null, console.error);		
+	}
+	else {
+		res.json({});
+	}
+});
+
+router.get('/logout', function(req, res, next) {
+	req.logout();
+	res.redirect('/');
 });
 
 router.get('/:id', function(req, res, next) {
@@ -73,13 +82,6 @@ router.put('/:id', function(req, res, next) {
 			res.json(user);
 		})
 		.then(null, next);
-});
-router.delete('/logout', function(req, res, next) {
-	console.log('delete');
-	req.session.destroy(function(err) {
-		console.log('in delete');
-		res.status(202).end();
-	});
 });
 
 router.delete('/:id', function(req, res, next) {

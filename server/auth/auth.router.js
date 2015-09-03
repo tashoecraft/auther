@@ -1,6 +1,13 @@
 var router = require('express').Router();
 
 var passport = require('passport');
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(obj, done) {
+  done(null, obj);
+});
 router.use(passport.initialize());
 router.use(passport.session());
 
@@ -18,7 +25,7 @@ passport.use(new GoogleStrategy({
 		User.findOne({'google.id': profile.id})
 			.then(function(user){
 				if (user) {
-					return done();
+					return done(null, user);
 				}
 				else {
 					var newUser = {
@@ -27,7 +34,7 @@ passport.use(new GoogleStrategy({
 						'google.id': profile.id,
 						'google.name': profile.name.givenName +' '+ profile.name.familyName, 
 					};
-					User.create(newUser).then(function(newUser){return done();});
+					newUser.save().then(function(newUser){return done(null,newUser);});
 				}
 			})
 			.then(null,console.error);
@@ -35,16 +42,15 @@ passport.use(new GoogleStrategy({
 ));
 
 router.use(function(req,res,next){
-	console.log('in the auth router');
 	next();
 });
 
 router.get('/google', passport.authenticate('google', { scope : 'email' }));
 
-router.get('/google/callback',
+router.get('/google/callback', 
   passport.authenticate('google', {
-    successRedirect : '/home',
-    failureRedirect : '/'
+    successRedirect : '/',
+    failureRedirect : '/users'
   }));
 
 module.exports = router;
